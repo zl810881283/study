@@ -1,0 +1,14 @@
+<h1>heroes list</h1>
+<ul>
+    <li *ngFor="#hero of heroes" [routerLink]="['HeroesDetail',{id:hero.name}]">{{hero.name}}</li>
+</ul>
+
+
+<!--<form>-->
+    <!--<label for="name">name:</label>-->
+    <!--<input id="name" type="text" name="name" ([ngModel])="name">-->
+
+    <!--<label for="age">age:</label>-->
+    <!--<input id="age" type="number" name="age" ([ngModel])="age">-->
+
+<!--</form>-->

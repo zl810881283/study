@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-4.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+>
+    <context:component-scan base-package="edu.cqu.no1.zl">
+        <context:exclude-filter type="annotation"
+                                expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation"
+                                expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+    </context:component-scan>
+    <!-- 自动扫描与装配bean -->
+
+    <!-- 导入外部的properties文件 -->
+    <context:property-placeholder location="classpath:mysql.properties"/>
+
+    <!-- 配置SessionFactory -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" scope="singleton">
+
+        <!-- 配置c3p0数据库连接池 -->
+        <property name="dataSource">
+
+            <bean class="com.mchange.v2.c3p0.ComboPooledDataSource">
+
+                <!-- 数据连接信息 -->
+                <property name="jdbcUrl" value="${jdbcUrl}"/>
+                <property name="driverClass" value="${driverClass}"/>
+                <property name="user" value="${user}"/>
+                <property name="password" value="${password}"/>
+
+                <!-- 其他配置 -->
+                <!--初始化时获取三个连接，取值应在minPoolSize与maxPoolSize之间。Default: 3 -->
+                <property name="initialPoolSize" value="3"/>
+
+                <!--连接池中保留的最小连接数。Default: 3 -->
+                <property name="minPoolSize" value="3"/>
+
+                <!--连接池中保留的最大连接数。Default: 15 -->
+                <property name="maxPoolSize" value="5"/>
+
+                <!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。Default: 3 -->
+                <property name="acquireIncrement" value="3"/>
+
+                <!-- 控制数据源内加载的PreparedStatements数量。如果maxStatements与maxStatementsPerConnection均为0，则缓存被关闭。Default: 0 -->
+                <property name="maxStatements" value="8"/>
+
+                <!--maxStatementsPerConnection定义了连接池内单个连接所拥有的最大缓存statements数。Default: 0 -->
+                <property name="maxStatementsPerConnection" value="5"/>
+
+                <!--最大空闲时间,1800秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
+                <property name="maxIdleTime" value="1800"/>
+            </bean>
+        </property>
+
+        <property name="configLocation" value="classpath:hibernate.cfg.xml"/>
+
+        <!-- 扫描domain包 -->
+        <property name="packagesToScan">
+            <list>
+                <value>edu.cqu.no1.zl.domain</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 配置声明式事务管理（采用注解的方式） -->
+    <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="txManager"/>
+</beans>

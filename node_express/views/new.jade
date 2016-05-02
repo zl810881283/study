@@ -1,0 +1,35 @@
+//
+   Created by zl on 2015/10/17.
+
+extends layout
+block content
+    .container(ng-app='myApp')
+        .row
+            ul(ng-controller='listController')
+                li(ng-repeat='item in list') {{item}}
+    script.
+
+        var myApp = angular.module('myApp', []);
+
+        myApp.service('listService', ['$http', function ($http) {
+            this.getList = function (cb) {
+                $http.jsonp('/jsonp/test?callback=JSON_CALLBACK')
+                        .success(
+                        function (data) {
+                            cb(null,data);
+                        })
+                        .error(function () {
+                            cb(new Error('bad response'));
+                        });
+            }
+        }]);
+        myApp.controller('listController', ['$scope', 'listService', function ($scope, listService) {
+            listService.getList(function (err, data) {
+                if (err)
+                    return;
+                    $scope.list = data.arr;
+
+            });
+        }]);
+
+

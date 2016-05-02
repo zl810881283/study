@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+    <meta name="viewport"
+          content="initial-scale=1,maximum-scale=1,user-scalable=no,width=device-width,height=device-height">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="lib/css/ionic.css"/>
+    <script src="lib/js/ionic.bundle.js"></script>
+</head>
+<body>
+
+<ion-side-menus>
+    <ion-side-menu-content edge-drag-threshold="false">
+        <ion-nav-bar class="bar-balanced">
+            <ion-nav-back-button>back</ion-nav-back-button>
+        </ion-nav-bar>
+        <ion-nav-view></ion-nav-view>
+    </ion-side-menu-content>
+
+    <ion-side-menu side="left" class="balanced-bg">left</ion-side-menu>
+    <ion-side-menu side="right" class="calm-bg">right</ion-side-menu>
+</ion-side-menus>
+
+<script id="main.html" subjectType="text/ng-template">
+    <ion-view view-title="home" ng-controller="NamesController">
+        <ion-nav-buttons side="left">
+            <a href="tabs.html" class="button">tabs.html</a>
+        </ion-nav-buttons>
+        <ion-nav-buttons side="right">
+            <button class="button" ng-click="goSecondNames()">下一页</button>
+            <button class="button button-calm" ng-click="toggleDelete()">删除</button>
+            <button class="button" ng-click="toggleReorder()">重排</button>
+        </ion-nav-buttons>
+
+        <ion-content overflow-scroll="true" class="has-footer has-header">
+            <!--<ion-refresher pulling-text="refreshing" on-refresh="refresh();" spinner="android"></ion-refresher>-->
+            <ion-list show-delete="state.showDelete" show-reorder="state.showReorder">
+                <ion-item ng-repeat="name in names">
+                    {{name}}
+                    <ion-option-button class="button-calm"></ion-option-button>
+                    <ion-delete-button class="ion-minus-circled" ng-click="deleteItem(name)"></ion-delete-button>
+                    <ion-reorder-button class="ion-navicon"
+                                        on-reorder="reorder(name,$fromIndex,$toIndex)"></ion-reorder-button>
+                    <!--<ion-toggle ng-model="isOn" toggle-class="toggle-calm"></ion-toggle>-->
+                </ion-item>
+                <ion-checkbox class="checkbox-dark" ng-model="checked">aaaa : {{checked}}</ion-checkbox>
+                <ion-checkbox class="checkbox-dark" ng-model="checked">aaaa : {{checked}}</ion-checkbox>
+                <ion-checkbox class="checkbox-dark" ng-model="checked">aaaa : {{checked}}</ion-checkbox>
+
+                <ion-radio  class="checkbox-dark" ng-model="selected" ng-value="'bb'">bbbb : {{selected}}</ion-radio>
+                <ion-radio  class="checkbox-dark" ng-model="selected" ng-value="'cc'">cccc : {{selected}}</ion-radio>
+            </ion-list>
+            <!--<ion-infinite-scroll on-infinite="infinite()" spinner="android"></ion-infinite-scroll>-->
+        </ion-content>
+    </ion-view>
+</script>
+
+<script id="second.html" subjectType="text/ng-template">
+    <ion-view ng-controller="SecondNamesController">
+        <ion-nav-title>
+            <i class="icon icon-accessory"></i>
+        </ion-nav-title>
+        <ion-content overflow-scroll="true" class="has-footer has-header">
+            <ion-refresher pulling-text="refreshing" on-refresh="refresh();" spinner="android"></ion-refresher>
+            <ul class="list">
+                <li class="item" ng-repeat="name in names">
+                    {{name}}
+                </li>
+            </ul>
+            <ion-infinite-scroll on-infinite="infinite()" spinner="android"></ion-infinite-scroll>
+        </ion-content>
+    </ion-view>
+</script>
+
+<script>
+    angular.module('myApp', ["ionic"])
+            .config(['$stateProvider', function ($stateProvider) {
+                $stateProvider.state("main", {templateUrl: "main.html"})
+                        .state("second", {templateUrl: "second.html"})
+
+            }])
+            .run(['$state',function($state){
+                $state.go('main');
+            }])
+            .controller('NamesController', ['$scope', '$state', function ($scope, $state) {
+                var i = 0;
+                $scope.names = [];
+                for (; i < 10; i++) {
+                    $scope.names.push(Math.random().toFixed(4) + 'test' + i);
+                }
+                $scope.refresh = function () {
+                    setTimeout(function () {
+                        i = 0;
+                        $scope.names = [];
+                        for (var j = 0; j < 10; j++, i++)
+                            $scope.names.push(Math.random().toFixed(4) + 'test' + i);
+                        $scope.$broadcast("scroll.refreshComplete");
+                    }, 500);
+                };
+                $scope.infinite = function () {
+                    setTimeout(function () {
+                        for (var j = 0; j < 5; j++, i++)
+                            $scope.names.push(Math.random().toFixed(4) + 'test' + i);
+                        $scope.$broadcast("scroll.infiniteScrollComplete");
+                    }, 1000);
+                };
+
+                $scope.isOn=true;
+
+                $scope.state = {
+                    showDelete: false,
+                    showReorder: false
+                };
+
+                $scope.toggleDelete = function () {
+                    $scope.state.showDelete = !$scope.state.showDelete;
+                    $scope.state.showReorder = false;
+                };
+
+                $scope.toggleReorder = function () {
+                    $scope.state.showReorder = !$scope.state.showReorder;
+                    $scope.state.showDelete = false;
+                };
+                $scope.goSecondNames = function () {
+                    $state.go('second');
+                };
+                $scope.deleteItem = function (item) {
+                    var index = $scope.names.indexOf(item);
+                    $scope.names.splice(index, 1);
+                };
+                $scope.reorder = function (item, from, to) {
+                    $scope.names.splice(from,1);
+                    $scope.names.splice(to,0,item);
+                };
+
+            }])
+            .controller('SecondNamesController', ['$scope', function ($scope) {
+                var i = 0;
+                $scope.names = [];
+                for (; i < 10; i++) {
+                    $scope.names.push(i + 'test' + Math.random().toFixed(4));
+                }
+                $scope.refresh = function () {
+                    setTimeout(function () {
+                        i = 0;
+                        $scope.names = [];
+                        for (var j = 0; j < 10; j++, i++)
+                            $scope.names.push(i + 'test' + Math.random().toFixed(4));
+                        $scope.$broadcast("scroll.refreshComplete");
+                    }, 500);
+                }
+                $scope.infinite = function () {
+                    setTimeout(function () {
+                        for (var j = 0; j < 5; j++, i++)
+                            $scope.names.push(i + 'test' + Math.random().toFixed(4));
+                        $scope.$broadcast("scroll.infiniteScrollComplete");
+                    }, 1000);
+                }
+            }]);
+</script>
+</body>
+</html>

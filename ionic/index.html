@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no,width=device-width,height=device-height">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="lib/css/ionic.css"/>
+    <script src="lib/js/ionic.bundle.js"></script>
+</head>
+<body>
+<ion-header-bar align-title="center" class="bar-balanced">
+    <h1 class="title">ionic and cordova test</h1>
+    <!--<button>click here</button>-->
+</ion-header-bar>
+<ion-content overflow-scroll="true" ng-controller="namesController">
+    <ion-refresher pulling-text="refreshing" on-refresh="refresh();" spinner="android" distance="10%"></ion-refresher>
+
+    <ul class="list" >
+        <li class="item" ng-repeat="name in names">
+            {{name}}
+        </li>
+    </ul>
+</ion-content>
+<ion-footer-bar class="bar-assertive">
+    <h1 class="title">footer bar test</h1>
+</ion-footer-bar>
+<script>
+    angular.module('myApp', ["ionic"])
+            .controller('namesController', ['$scope', function ($scope) {
+                var i = 0;
+                $scope.names = [];
+                for (; i < 5; i++) {
+                    $scope.names.push('test' + i);
+                }
+                $scope.refresh = function () {
+                    setTimeout(function(){
+                        console.log('refreshing');
+                        for (var j = 0; j < 5; j++, i++)
+                            $scope.names.push('test' + i);
+                        $scope.$broadcast("scroll.refreshComplete");
+                    },500);
+                }
+            }])
+</script>
+</body>
+</html>

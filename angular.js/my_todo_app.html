@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .done-true {
+            text-decoration: line-through;
+            color: grey;
+        }
+    </style>
+    <script src="scripts/angular.js"></script>
+</head>
+<body ng-controller="todoList">
+<h2>Todo</h2>
+<p>{{remaining()}} of {{todos.length}} [ <a href="javascript:" ng-click="archive()">archive</a> ]</p>
+<ul>
+    <li ng-repeat="todo in todos">
+        <input id="todo-{{$index}}" subjectType="checkbox" ng-model="todo.done"/>
+        <label for="todo-{{$index}}" class="done-{{todo.done}}">{{todo.name}}</label>
+    </li>
+</ul>
+<form ng-submit="add()">
+    <input subjectType="text" ng-model="todoText"  size="30"
+           placeholder="add new todo here">
+    <input subjectType="submit" value="add">
+</form>
+<script>
+    angular.module("myApp",[])
+            .controller("todoList",["$scope",function($scope){
+                $scope.todos=[
+                    {
+                        name:"learn angular",
+                        done:true
+                    },
+                    {
+                        name:"build an angular app",
+                        done:false
+                    }
+                ];
+                $scope.add=function(){
+                    $scope.todos.push({name:$scope.todoText,done:false});
+                    $scope.todoText="";
+                };
+                $scope.archive=function(){
+                    var t=[];
+                    for(var i in $scope.todos){
+                        if(!$scope.todos[i].done){
+                            t.push($scope.todos[i]);
+                        }
+                    }
+                    $scope.todos=t;
+                };
+                $scope.remaining=function(){
+                    var n=0;
+                    for(var i in $scope.todos){
+                        if(!$scope.todos[i].done){
+                            n++;
+                        }
+                    }
+                    return n;
+                }
+            }])
+</script>
+</body>
+</html>

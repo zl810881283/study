@@ -1,0 +1,37 @@
+{
+  "name": "auction",
+  "description": "application created by thinkjs",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node www/development.js",
+    "compile": "babel --loose all --optional runtime --stage 0 --modules common src/ --out-dir app/ --retain-lines",
+    "watch-compile": "node -e \"console.log('<npm run watch-compile> no longer need, use <npm start> command direct.');console.log();\"",
+    "watch": "npm run watch-compile",
+    "front-dev": "webpack-dev-server --inline -d --colors --display-error-details --display-cached --port 3000",
+    "front-release": "webpack"
+  },
+  "dependencies": {
+    "angular2": "^2.0.0-alpha.48",
+    "autoprefixer-loader": "^3.1.0",
+    "thinkjs": "2.0.x",
+    "babel": "5.8.21",
+    "babel-runtime": "5.6.17"
+    "babel-loader": "^5.3.2",
+    "babel-plugin-angular2-annotations": "^2.0.1",
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "json-loader": "^0.5.4",
+    "mocha": "^2.3.4",
+    "mongodb": "^2.0.49",
+    "morgan": "^1.6.1",
+    "raw-loader": "^0.5.1",
+    "rxjs": "5.0.0-alpha.11",
+    "less-loader": "^3.1.2",
+    "webpack": "^1.12.9",
+    "webpack-dev-server": "^1.14.0"
+  },
+  "devDependencies": {
+    "babel-plugin-typecheck": "^2.0.1",
+    "live-server": "^0.8.2"
+  }
+}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="styles/main.css"/>
+    <script src="scripts/angular.js"></script>
+    
+</head>
+
+<body>
+<div ng-controller="firstController">
+    {{test}}
+</div>
+<script>
+    angular.module('myApp',[])
+            .controller('firstController',['$scope',function($scope){
+                $scope.test="zhangle";
+            }]);
+</script>
+</body>
+
+</html>
