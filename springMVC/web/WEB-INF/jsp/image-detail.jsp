@@ -1,4 +1,6 @@
 <%@ page contentType="text/html;charset=utf-8" %>
+<%@ taglib prefix="c"
+           uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -41,6 +43,10 @@
             background: #aaaaaa;
             border-radius: 5px;
         }
+
+        .subject-form {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -59,11 +65,18 @@
             <div class="preview-lg img-preview-wrapper">
                 <div class="img-preview preview-lg img-center"></div>
             </div>
+            <form action="" class="subject-form">
+                <div class="form-group">
+                    <label for="subject-name">名称</label>
+                    <input type="text" name="subject-name" id="subject-name" class="form-control">
+                </div>
+                <button class="btn btn-success" type="button" id="submit">提交</button>
+            </form>
         </div>
     </div>
 </div>
 
-
+<h2 class="h2">语义</h2>
 <table class="table">
     <thead>
     <tr>
@@ -74,54 +87,31 @@
     </tr>
     </thead>
     <tbody>
-    <tr>
-        <td>0</td>
-        <td>asdf</td>
-        <td>
-            <button class="btn btn-danger">删除</button>
-        </td>
-        <td class="preview-lg">
-            <div class="preview-lg img-preview-wrapper">
-                <div class="img-center"><img
-                        src="/rest/image/cut/4028b881546d9d0f01546d9d369e0000?centerX=100&centerY=100&offX=80&offY=100">
+    <c:forEach items="${subjects}" var="subject">
+        <tr>
+            <td>${subject.id}</td>
+            <td>${subject.name}</td>
+            <td>
+                <button class="btn btn-danger btn-delete" data-id="${subject.id}">删除</button>
+            </td>
+            <td class="preview-lg">
+                <div class="preview-lg img-preview-wrapper">
+                    <div class="img-center"><img
+                            src="/rest/image/cut/${subject.image.id}?centerX=${subject.centerX}&centerY=${subject.centerY}&offX=${subject.offX}&offY=${subject.offY}">
+                    </div>
                 </div>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>0</td>
-        <td>asdf</td>
-        <td>
-            <button class="btn btn-danger">删除</button>
-        </td>
-        <td class="preview-lg">
-            <div class="preview-lg img-preview-wrapper">
-                <div class="img-center"><img
-                        src="/rest/image/cut/4028b881546d9d0f01546d9d369e0000?centerX=100&centerY=100&offX=80&offY=100">
-                </div>
-            </div>
-        </td>
-    </tr>
+            </td>
+        </tr>
+    </c:forEach>
     </tbody>
 </table>
 <script>
     jQuery(function ($) {
-        $('#upload-image').click(function () {
-            console.log('click');
-            $.ajax({
-                type: "POST",
-                url: "/rest/image",
-                data: new FormData($('#upload-form')[0]),
-                processData: false,
-                contentType: false,
-                success: function () {
-                    alert("Data Uploaded: ");
-                }
-            });
-        });
+        var cropData={};
         var cropper = new Cropper($('#image')[0], {
             preview: '.img-preview',
             crop: function (e) {
+                cropData=e.detail;
                 console.log(e);
                 console.log('detail x: ' + e.detail.x);
                 console.log('detail y: ' + e.detail.y);
@@ -132,6 +122,40 @@
                 console.log('detail scaleY: ' + e.detail.scaleY);
             }
         });
+
+        $('#submit').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "/rest/subject",
+                data: {
+                    imageId:"${imageId}",
+                    name: $('#subject-name').val(),
+                    centerX: parseInt(cropData.x + cropData.width / 2),
+                    centerY: parseInt(cropData.y + cropData.height / 2),
+                    offX: parseInt(cropData.width / 2),
+                    offY: parseInt(cropData.height / 2)
+                },
+
+                success: function () {
+                    alert("添加成功");
+                    location.reload();
+                }
+            });
+        });
+
+        $('.btn-delete').click(function(){
+            $.ajax({
+                type: "DELETE",
+                url: "/rest/subject/"+$(this).data('id'),
+                success: function () {
+                    alert("删除成功");
+                    location.reload();
+                }
+            });
+
+
+        });
+
     });
 
 

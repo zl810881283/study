@@ -14,8 +14,8 @@ import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Iterator;
-import java.util.UUID;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by zl on 2016/4/30.
@@ -46,7 +46,7 @@ public class ImageService {
         return image;
     }
 
-    public BufferedImage getImage(String id,String imagesPath){
+    public BufferedImage getImage(String id, String imagesPath) {
         Image image = imageDao.get(Image.class, id);
         if (image == null) {
             return null;
@@ -67,6 +67,7 @@ public class ImageService {
             return null;
         }
     }
+
     public BufferedImage getPositionedImage(String id, Integer centerX, Integer centerY,
                                             Integer offX, Integer offY, String imagesPath) {
         Image image = imageDao.get(Image.class, id);
@@ -124,5 +125,23 @@ public class ImageService {
 
     public void writeImageToOutputStream(BufferedImage input, OutputStream out) throws IOException {
         ImageIO.write(input, "png", out);
+    }
+
+    public List<Image> getAllImage() {
+
+        List<Image> images = imageDao.findAll(Image.class);
+
+        Collections.sort(images, new Comparator<Image>() {
+            public int compare(Image arg0, Image arg1) {
+                return arg0.getSubjectsSize().compareTo(arg1.getSubjectsSize());
+            }
+        });
+
+        return images;
+
+    }
+
+    public void remove(String id) {
+        imageDao.delete(Image.class, id);
     }
 }

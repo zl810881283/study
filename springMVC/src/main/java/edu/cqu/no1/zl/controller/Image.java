@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -42,9 +43,9 @@ public class Image {
 
     @RequestMapping(value = "/image/cut/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public void get(@PathVariable String id, Integer centerX, Integer centerY,
-                    Integer offX, Integer offY,
-                    HttpServletRequest req, HttpServletResponse res) {
+    public void getCut(@PathVariable String id, Integer centerX, Integer centerY,
+                       Integer offX, Integer offY,
+                       HttpServletRequest req, HttpServletResponse res) {
         res.setContentType("image/*");
         String uploadPath = req.getRealPath("/") + "images/";
         try {
@@ -61,6 +62,24 @@ public class Image {
 
     }
 
+    @RequestMapping(value = "/image/resize/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public void getResize(@PathVariable String id, HttpServletRequest req, HttpServletResponse res) {
+        res.setContentType("image/*");
+        String uploadPath = req.getRealPath("/") + "images/";
+        try {
+            OutputStream os = res.getOutputStream();
+            BufferedImage image = imageService.getImage(id, uploadPath);
+            BufferedImage resizedImage = imageService.resizeImage(image, 160, 160);
+            imageService.writeImageToOutputStream(resizedImage, os);
+
+            os.flush();
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @RequestMapping(value = "/image/{id}", method = RequestMethod.GET)
     @ResponseBody
     public void get(@PathVariable String id, HttpServletRequest req, HttpServletResponse res) {
@@ -68,7 +87,7 @@ public class Image {
         String uploadPath = req.getRealPath("/") + "images/";
         try {
             OutputStream os = res.getOutputStream();
-            BufferedImage image = imageService.getImage(id,  uploadPath);
+            BufferedImage image = imageService.getImage(id, uploadPath);
             imageService.writeImageToOutputStream(image, os);
 
             os.flush();
@@ -78,16 +97,10 @@ public class Image {
         }
 
     }
-
-    @RequestMapping(value = "/image", method = RequestMethod.POST)
+    @RequestMapping(value = "/image/{id}", method = RequestMethod.DELETE)
     @ResponseBody
-    public Object post(HttpServletRequest req) throws IOException {
-        MultipartHttpServletRequest mreq = (MultipartHttpServletRequest) req;
-        MultipartFile file = mreq.getFile("image");
-        String uploadPath = req.getRealPath("/") + "images/";
-
-        return imageService.addImage(file, uploadPath);
-
+    public void delete(@PathVariable String id){
+        imageService.remove(id);
     }
 
 }

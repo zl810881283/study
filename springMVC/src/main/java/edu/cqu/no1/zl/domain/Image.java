@@ -29,7 +29,7 @@ public class Image {
     @Column(unique = true, nullable = false)
     private String fileName;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy = "image")
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY,mappedBy = "image")
     private Set<Subject> subjects;
 
     public String getId() {
@@ -50,6 +50,10 @@ public class Image {
 
     public Set<Subject> getSubjects() {
         return subjects;
+    }
+
+    public Integer getSubjectsSize(){
+        return subjects.size();
     }
 
     public void setSubjects(Set<Subject> subjects) {
